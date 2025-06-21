@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-import plotly.express as px
+import plotly as px
 
 st.title("💳 Year-End Spending Analyzer")
 st.write("Upload your American Express year-end summary to analyze your spending.")
