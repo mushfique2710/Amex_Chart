@@ -1,15 +1,15 @@
 import pandas as pd
 import streamlit as st
-import plotly as px
+import matplotlib.pyplot as plt
 
 st.title("💳 Year-End Spending Analyzer")
 st.write("Upload your American Express year-end summary to analyze your spending.")
 
-# File uploader
+# Upload CSV with low_memory=True
 uploaded_file = st.file_uploader("Upload your Year-End Summary CSV", type="csv")
 
 if uploaded_file:
-    df = pd.read_csv(uploaded_file)
+    df = pd.read_csv(uploaded_file, low_memory=True)
 
     # Clean Date column
     df["Date"] = pd.to_datetime(df["Date"], dayfirst=True, errors="coerce")
@@ -24,10 +24,10 @@ if uploaded_file:
     df["Credits $"] = df["Credits $"].replace(r"^\s*$", pd.NA, regex=True)
     df["Credits $"] = pd.to_numeric(df["Credits $"], errors="coerce").fillna(0)
 
-    # Drop rows where Date or Charges are missing
+    # Drop rows with missing essential info
     df = df.dropna(subset=["Date", "Charges $"])
 
-    # Show preview
+    # Preview
     st.subheader("📄 Preview of Data")
     st.write(df.head())
 
@@ -38,7 +38,7 @@ if uploaded_file:
     start_date = st.date_input("Start date", value=min_date, min_value=min_date, max_value=max_date)
     end_date = st.date_input("End date", value=max_date, min_value=min_date, max_value=max_date)
 
-    # 📂 Category Filter
+    # 🗂️ Category Filter
     st.subheader("🗂️ Filter by Category")
     available_categories = sorted(df["Category"].dropna().unique())
     selected_categories = st.multiselect("Select categories to include", available_categories, default=available_categories)
@@ -58,7 +58,7 @@ if uploaded_file:
         st.subheader("📊 Filtered Transactions")
         st.write(filtered_df.head())
 
-        # 💰 Spending Summary
+        # 💰 Financial Summary
         total_charges = filtered_df["Charges $"].sum()
         total_credits = filtered_df["Credits $"].sum()
         net_spending = total_charges - total_credits
@@ -69,12 +69,15 @@ if uploaded_file:
         col3.metric("🧮 Net Spending", f"${net_spending:,.2f}")
 
         if st.button("Generate Charts"):
-            # 📊 Bar chart by Sub-Category
+            # 📊 Bar chart
             subcat_summary = filtered_df.groupby("Sub-Category")["Charges $"].sum().sort_values(ascending=False)
             st.subheader("📊 Spending by Sub-Category")
             st.bar_chart(subcat_summary)
 
-            # 🥧 Pie chart by Category
-            category_summary = filtered_df.groupby("Category")["Charges $"].sum().reset_index()
-            fig = px.pie(category_summary, names="Category", values="Charges $", title="🧩 Spending Breakdown", hole=0.4)
-            st.plotly_chart(fig)
+            # 🥧 Pie chart using matplotlib
+            st.subheader("🧩 Spending Breakdown by Category")
+            category_summary = filtered_df.groupby("Category")["Charges $"].sum()
+            fig, ax = plt.subplots()
+            ax.pie(category_summary, labels=category_summary.index, autopct="%1.1f%%", startangle=90)
+            ax.axis("equal")
+            st.pyplot(fig)
