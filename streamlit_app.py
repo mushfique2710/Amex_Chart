@@ -2,7 +2,7 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 
-st.title("💳 Low-Memory Year-End Spending Analyzer")
+st.title("💳 Year-End Spending Analyzer")
 st.write("Optimized to handle large Amex year-end summaries efficiently.")
 
 # Only load required columns
