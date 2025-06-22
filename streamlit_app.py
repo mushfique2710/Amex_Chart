@@ -91,6 +91,6 @@ if uploaded_file:
             st.subheader("🧩 Sub-Category Spending Breakdown")
             category_summary = filtered_df.groupby("Sub-Category")["Charges $"].sum()
             fig, ax = plt.subplots()
-            ax.pie(category_summary, labels=category_summary.index, autopct="%1.1f%%", startangle=90)
+            ax.pie(category_summary, labels=category_summary.index, autopct="%2f%%", startangle=90)
             ax.axis("equal")
             st.pyplot(fig)
