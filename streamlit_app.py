@@ -87,9 +87,9 @@ if uploaded_file:
             st.subheader("📊 Spending by Sub-Category")
             st.bar_chart(subcat_summary)
 
-            # Pie chart: Category
-            st.subheader("🧩 Category Spending Breakdown")
-            category_summary = filtered_df.groupby("Category")["Charges $"].sum()
+            # Pie chart: Sub-Category
+            st.subheader("🧩 Sub-Category Spending Breakdown")
+            category_summary = filtered_df.groupby("Sub-Category")["Charges $"].sum()
             fig, ax = plt.subplots()
             ax.pie(category_summary, labels=category_summary.index, autopct="%1.1f%%", startangle=90)
             ax.axis("equal")
